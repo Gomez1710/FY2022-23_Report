@@ -1,0 +1,355 @@
+---
+title: "FY 2022-23 Application Summary"
+author: "CalMedForce"
+date: "2022-10-18"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    css: styles.css
+---
+
+`
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE)
+
+
+#read libraries
+library(leaflet)
+library(htmltools)
+library(shiny)
+library(shinyWidgets)
+library(DT)
+library(pander)
+
+#source r script from application score subfolder
+source("fy2223_summary.R")
+source("step10.R")
+
+```
+
+# Awardee Summary
+
+## Awardee Summary Table
+
+```{r}
+
+knitr::kable(awardee_summary)
+
+```
+
+## Awardee Summary by County
+
+```{r}
+
+awardee_map$Tier.Level <- factor(awardee_map$Tier.Level)
+
+awardee_map$legendText <- ifelse(grepl("Tier 1", awardee_map$Tier.Level), "Tier 1 County with Awardees (High Need)",
+                              ifelse(grepl("Tier 2", awardee_map$Tier.Level), "Tier 2 County with Awardees (Medium Need)",
+                                     ifelse(grepl("Tier 3", awardee_map$Tier.Level), "Tier 3 County with Awardees (Lowest Need)", NA)))
+
+test_tiers <- colorFactor(c("#10C637", "#042B46", "#FF982C"), na.color = "white", awardee_map$Tier.Level)
+test_tiers1 <- colorFactor(c("#10C637", "#042B46", "#FF982C"), na.color = "white", awardee_map$legendText)
+
+    awardee_map$mytext <- sprintf(
+      "<p style='font-size: 18px; font-family: montserrat'>%s</p>",
+      awardee_map$mytext) %>% 
+      lapply(htmltools::HTML) 
+
+
+  leaflet(awardee_map, width = "100%", height = "750px", options = leafletOptions(zoomControl = FALSE)) %>% 
+  addPolygons(fillColor = test_tiers(awardee_map$Tier.Level),
+              popup = awardee_map$mytext,
+               popupOptions = popupOptions(maxWidth = 500),
+              label = awardee_map$County,
+              labelOptions = labelOptions(style = list("font-weight" = "normal", 
+                                                           padding = "3px 8px",
+                                                           "font-family" = "Montserrat"),
+                                              textsize = "25px",
+                                              direction = "auto",
+                                              interactive = TRUE),
+              color = "#444444",
+              smoothFactor = .5,
+              weight = 1,
+              opacity = 1.0,
+              fillOpacity = 1) %>% 
+    addLegend(title = "County Tiers", pal = test_tiers1, values = ~awardee_map$legendText, opacity = 1, na.label = "County has no Awardees")
+
+
+```
+
+## FY 2022-23 List of Awardees
+
+```{r}
+
+datatable(list_of_awardees, width = "500px")
+
+```
+
+# Awardee Breakdown by Discipline
+
+## Family Medicine {.tabset}
+
+### Final Score
+```{r, fig.width=10, fig.height=7}
+
+fm_FS
+
+```
+
+### HSPA
+```{r, fig.width=10, fig.height=7}
+
+fm_HPSA
+
+```
+
+### Priority County
+```{r, fig.width=10, fig.height=7}
+
+fm_PC
+
+```
+
+### Payor Mix
+```{r, fig.width=10, fig.height=7}
+
+fm_PM
+
+```
+
+### Program Type
+```{r, fig.width=10, fig.height=7}
+
+fm_PT
+
+```
+
+### Graduates
+```{r, fig.width=10, fig.height=7}
+
+fm_Grads
+
+```
+
+## Internal Medicine {.tabset}
+
+### Final Score
+```{r, fig.width=10, fig.height=7}
+
+im_FS
+
+```
+
+### HSPA
+```{r, fig.width=10, fig.height=7}
+
+im_HPSA
+
+```
+
+### Priority County
+```{r, fig.width=10, fig.height=7}
+
+im_PC
+
+```
+
+### Payor Mix
+```{r, fig.width=10, fig.height=7}
+
+im_PM
+
+```
+
+### Program Type
+```{r, fig.width=10, fig.height=7}
+
+im_PT
+
+```
+
+### Graduates
+```{r, fig.width=10, fig.height=7}
+
+im_Grads
+
+```
+
+## Pediatrics {.tabset}
+
+### Final Score
+```{r, fig.width=10, fig.height=7}
+
+peds_FS
+
+```
+
+### HSPA
+```{r, fig.width=10, fig.height=7}
+
+peds_HPSA
+
+```
+
+### Priority County
+```{r, fig.width=10, fig.height=7}
+
+peds_PC
+
+```
+
+### Payor Mix
+```{r, fig.width=10, fig.height=7}
+
+peds_PM
+
+```
+
+### Program Type
+```{r, fig.width=10, fig.height=7}
+
+peds_PT
+
+```
+
+### Graduates
+```{r, fig.width=10, fig.height=7}
+
+peds_Grads
+
+```
+
+## OBGYN {.tabset}
+
+### Final Score
+```{r, fig.width=10, fig.height=7}
+
+ob_FS
+
+```
+
+### HSPA
+```{r, fig.width=10, fig.height=7}
+
+ob_HPSA
+
+```
+
+### Priority County
+```{r, fig.width=10, fig.height=7}
+
+ob_PC
+
+```
+
+### Payor Mix
+```{r, fig.width=10, fig.height=7}
+
+ob_PM
+
+```
+
+### Program Type
+```{r, fig.width=10, fig.height=7}
+
+ob_PT
+
+```
+
+### Graduates
+```{r, fig.width=10, fig.height=7}
+
+ob_Grads
+
+```
+
+## Emergency Medicine {.tabset}
+
+### Final Score
+```{r, fig.width=10, fig.height=7}
+
+em_FS
+
+```
+
+### HSPA
+```{r, fig.width=10, fig.height=7}
+
+em_HPSA
+
+```
+
+### Priority County
+```{r, fig.width=10, fig.height=7}
+
+em_PC
+
+```
+
+### Payor Mix
+```{r, fig.width=10, fig.height=7}
+
+em_PM
+
+```
+
+### Program Type
+```{r, fig.width=10, fig.height=7}
+
+em_PT
+
+```
+
+### Graduates
+```{r, fig.width=10, fig.height=7}
+
+em_Grads
+
+```
+
+# Graduate Outcomes
+
+## Graduates by County
+
+```{r}
+
+    grads_cali$mytext <- sprintf(
+      "<p style='font-size: 18px; font-family: montserrat'>%s</p>",
+      grads_cali$mytext) %>% 
+      lapply(htmltools::HTML)  
+
+  pal <- colorNumeric(palette = "viridis",  domain = grads_cali$n, na.color = "white")
+
+
+  leaflet(grads_cali, width = "100%", height = "750px", options = leafletOptions(zoomControl = FALSE)) %>% 
+  addPolygons(fillColor = pal(grads_cali$n),
+              color = "#444444",
+              popup = grads_cali$mytext,
+              popupOptions = popupOptions(maxWidth = 500),
+              label = grads_cali$County,
+              labelOptions = labelOptions(style = list("font-weight" = "normal", 
+                                                           padding = "3px 8px",
+                                                           "font-family" = "Montserrat"),
+                                              textsize = "25px",
+                                              direction = "auto",
+                                              interactive = TRUE),
+              weight = 1,
+              opacity = 1.0,
+              fillOpacity = 1,
+              highlightOptions = highlightOptions(weight = 5,
+                                                  color = "#666",
+                                                  fillOpacity = 0,7,
+                                                  bringToFront = TRUE)) %>% 
+    addLegend(title = "Total Number of Grads", pal = pal, values = ~grads_cali$n, opacity = 0.7,
+              position = "topright", na.label = "")
+
+
+
+
+
+```
+
+
+
